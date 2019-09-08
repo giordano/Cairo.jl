@@ -8,13 +8,15 @@ using Cairo_jll
 using Pango_jll
 # For libgobject
 using Glib_jll
+# We only we need the path of libfontconfig
+using Fontconfig_jll
 
 function __init__()
-    # On Linux and FreeBSD we use FontConfig. Set FONTCONFIG_PATH only if none
-    # of FONTCONFIG_PATH or FONTCONFIG_FILE is set.
-    if !(Sys.isapple() || Sys.iswindows()) && get(ENV, "FONTCONFIG_PATH", "") == "" &&
-        get(ENV, "FONTCONFIG_FILE", "") == ""
-        ENV["FONTCONFIG_PATH"] = joinpath(dirname(libcairo), "..", "etc", "fonts")
+    # On Linux, FreeBSD and macOS we use FontConfig. Set FONTCONFIG_FILE to the
+    # config file we provide.
+    if !Sys.iswindows()
+        ENV["FONTCONFIG_FILE"] = joinpath(dirname(Fontconfig_jll.libfontconfig_path),
+                                          "..", "etc", "fonts", "fonts.conf")
     end
 end
 
